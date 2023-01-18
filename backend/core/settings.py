@@ -15,6 +15,8 @@ from dotenv import load_dotenv
 from prettyconf import config
 import datetime
 
+from django.utils.translation import gettext_lazy as _
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -35,6 +37,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
+SITE_ID = 1
+
 
 # Application definition
 
@@ -45,13 +49,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     #Local apps
+    'api',
+    'categories',
     'products',
     #Third party apps
     'ckeditor',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'mptt',
+    'parler',
 ]
 
 MIDDLEWARE = [
@@ -122,7 +131,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGES = [
+    ('en', _('English')),
+    ('es', _('Spanish')),
+]
+
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'America/Tegucigalpa'
 
@@ -132,11 +146,42 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale')
+]
+
+PARLER_LANGUAGES = {
+    1: (
+        {'code': 'en', },  # English
+        {'code': 'es', },  # Spanish
+    ),
+    'default': {
+        'fallbacks': ['en'],
+        'hide_untranslated': False,
+    }
+}
+
+PARLER_ENABLE_CACHING = True
+PARLER_DEFAULT_ACTIVATE = True
+PARLER_SHOW_EXCLUDED_LANGUAGE_TABS = True
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# custom
+LOGOUT_REDIRECT_URL = '/login/'
+LOGIN_REDIRECT_URL = 'main:index'
+LOGIN_URL = '/login/'
+LOGOUT_URL = '/logout/'
+LOGIN_ERROR_URL = '/login/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
