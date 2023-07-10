@@ -35,10 +35,9 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.132.160']
 
 SITE_ID = 1
-
 
 # Application definition
 
@@ -50,22 +49,47 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    #Local apps
+
+    # Local apps
+    'accounts',
     'api',
-    'categories',
+    'banners',
+    'base',
+    'file_management',
+    'navsite',
     'products',
-    #Third party apps
+    # 'scheduler',
+    'sliders',
+    'timer',
+
+    # Third party apps
     'ckeditor',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.twitter',
+    'allauth.socialaccount.providers.google',
     'mptt',
     'parler',
+    'django_apscheduler',
+    'polymorphic',
+    'corsheaders',
+    'leaflet',
+    'ordered_model',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -93,7 +117,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -105,9 +128,16 @@ DATABASES = {
         'PASSWORD': config("DB_DEFAULT_PASSWORD"),
         'HOST': config("DB_DEFAULT_HOST"),
         'PORT': config("DB_DEFAULT_PORT"),
+    },
+    'test': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config("DB_TEST_NAME"),
+        'USER': config("DB_DEFAULT_USER"),
+        'PASSWORD': config("DB_DEFAULT_PASSWORD"),
+        'HOST': config("DB_DEFAULT_HOST"),
+        'PORT': config("DB_DEFAULT_PORT"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -127,7 +157,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -136,7 +165,7 @@ LANGUAGES = [
     ('es', _('Spanish')),
 ]
 
-LANGUAGE_CODE = 'es'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'America/Tegucigalpa'
 
@@ -165,7 +194,6 @@ PARLER_ENABLE_CACHING = True
 PARLER_DEFAULT_ACTIVATE = True
 PARLER_SHOW_EXCLUDED_LANGUAGE_TABS = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
@@ -174,14 +202,16 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # custom
-LOGOUT_REDIRECT_URL = '/login/'
-LOGIN_REDIRECT_URL = 'main:index'
-LOGIN_URL = '/login/'
-LOGOUT_URL = '/logout/'
-LOGIN_ERROR_URL = '/login/'
+# LOGOUT_REDIRECT_URL = '/login/'
+# LOGIN_REDIRECT_URL = 'base:index'
+# LOGIN_URL = '/login/'
+# LOGOUT_URL = '/logout/'
+# LOGIN_ERROR_URL = '/login/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# BASE_URL = 'https://ivoscafe.com/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -191,6 +221,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ####################################
 #  EMAIL CUSTOM CONFIGURATION #
 ####################################
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
@@ -208,7 +239,13 @@ CKEDITOR_IMAGE_BACKEND = "pillow"
 
 CKEDITOR_CONFIGS = {
     'default': {
-        'toolbar': None,
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink'],
+            ['RemoveFormat', 'Source']
+        ]
     },
 }
 
@@ -218,9 +255,10 @@ CKEDITOR_CONFIGS = {
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "api.authentication.TokenAuthentication",
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
+        # "rest_framework_simplejwt.authentication.JWTAuthentication",
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+        # "api.authentication.TokenAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticatedOrReadOnly"
@@ -229,8 +267,71 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10
 }
 
+AUTHENTICATION_BACKENDS = (
+    # "rest_framework.authentication.SessionAuthentication",
+    # 'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+    "allauth.account.auth_backends.AuthenticationBackend",
+    "django.contrib.auth.backends.ModelBackend",
+    # "rest_framework_simplejwt.authentication.JWTAuthentication",
+    # "api.authentication.TokenAuthentication",
+)
+
 SIMPLE_JWT = {
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
     "AUTH_HEADER_TYPES": ["Bearer"],
-    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(seconds=30),  # minutes=5
-    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(minutes=1),  # days=1
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=1),  # minutes=15
+    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=14),  # days=14
+    "ROTATE_REFRESH_TOKENS": True,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
+
+####################################
+#  DJ REST AUTH CONFIGURATION #
+####################################
+REST_AUTH = {
+    'USE_JWT': True,
+    'SESSION_LOGIN': False,
+    'JWT_AUTH_COOKIE': 'jwt-auth',
+    'JWT_AUTH_REFRESH_COOKIE': 'jwt-refresh-auth',
+    'JWT_AUTH_HTTPONLY': False,
+    # 'LOGIN_SERIALIZER': 'accounts.serializers.LoginSerializer',
+    'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
+}
+
+####################################
+#  ALLAUTH CONFIGURATION #
+####################################
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+
+####################################
+#  SCHEDULER CONFIG #
+####################################
+
+SCHEDULER_AUTOSTART = True
+
+SCHEDULER_RUN_AT_TIMES = [
+    '00:00',
+    '10:15',
+    '12:00',
+    '22:15',
+]
+
+SCHEDULER_TIMEZONE = 'America/Tegucigalpa'
+
+####################################
+#  CORS CONFIGURATION #
+####################################
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',  # replace with your own domain
+    'http://127.0.0.1:3000',  # replace with your own domain
+    'http://192.168.132.160:3000',  # replace with your own domain
+]
+
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
