@@ -13,7 +13,7 @@ class CategoryQuerySet(TranslatableQuerySet, TreeQuerySet):
 
     def as_manager(cls):
         # Make sure the Django way of creating managers works.
-        manager = CategoryManager.from_queryset(cls)()
+        manager = CategoryAdminManager.from_queryset(cls)()
         manager._built_with_as_manager = True
         return manager
 
@@ -21,9 +21,9 @@ class CategoryQuerySet(TranslatableQuerySet, TreeQuerySet):
     as_manager = classmethod(as_manager)
 
 
-class CategoryManager(TreeManager, TranslatableManager):
+class CategoryAdminManager(TreeManager, TranslatableManager):
     """
-    Base manager class for the categories.
+    Base manager class for the navsite.
     """
 
     _queryset_class = CategoryQuerySet

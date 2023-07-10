@@ -3,19 +3,21 @@ from mptt.admin import DraggableMPTTAdmin, MPTTModelAdmin
 from mptt.forms import MPTTAdminForm
 from parler.admin import TranslatableAdmin
 from parler.forms import TranslatableModelForm
-from . import models
+from navsite.models import Category
+# from navsite.managers import CategoryAdminManager
 
 class CategoryAdminForm(MPTTAdminForm, TranslatableModelForm):
     """
-    Form for categories, both MPTT + translatable.
+    Form for navsite, both MPTT + translatable.
     """
     pass
 
 
 class CategoryAdmin(DraggableMPTTAdmin, TranslatableAdmin):
     """
-    Admin page for categories.
+    Admin page for navsite.
     """
+    # manager = CategoryAdminManager()
     # list_display = ("title", "slug", "keywords")
     mptt_indent_field = "title"  # be explicit for MPTT
     list_display = ('tree_actions', 'indented_title')
@@ -39,9 +41,9 @@ class CategoryAdmin(DraggableMPTTAdmin, TranslatableAdmin):
         }),
         ('Display', {
             'fields': (
-                "order_number",
-                ("url", "active_url"),
-                "status",)
+                "category_type",
+                "url",
+                "public",)
          }),
     ]
 
@@ -49,4 +51,4 @@ class CategoryAdmin(DraggableMPTTAdmin, TranslatableAdmin):
         # Needed for django-parler
         return {"slug": ("title",)}
 
-admin.site.register(models.Category, CategoryAdmin)
+admin.site.register(Category, CategoryAdmin)
