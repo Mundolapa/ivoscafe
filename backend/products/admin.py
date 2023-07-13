@@ -50,20 +50,19 @@ class ProductVariationInline(TranslatableTabularInline):
         return 0
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        if db_field.name == "attribute":
-            # Get the active language from Parler
+        if db_field.name == "attribute" and hasattr(self, 'product'):
             active_language = request.GET.get('language', request.LANGUAGE_CODE)
+            kwargs["queryset"] = ProductAttribute.objects.filter(product=self.product).prefetch_related('translations')
 
-            # Prefetch related translations for better performance
-            kwargs["queryset"] = ProductAttribute.objects.all().prefetch_related('translations')
-
-            # Loop over the queryset, set the language for each object and replace
-            # the string representation of each object with its translated name
             for obj in kwargs["queryset"]:
                 with switch_language(obj, active_language):
                     obj.name = obj.safe_translation_getter('name', any_language=True)
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_formset(self, request, obj=None, **kwargs):
+        self.product = obj  # Save the product instance
+        return super().get_formset(request, obj, **kwargs)
 
 
 @admin.register(Product)
@@ -101,6 +100,8 @@ class ProductAdmin(TranslatableAdmin):
 
     def get_formsets_with_inlines(self, request, obj=None):
         for inline in self.get_inline_instances(request, obj):
+            # add the parent obj to request, so we can access it in ProductVariationInline.formfield_for_foreignkey
+            request._obj_ = obj
             yield inline.get_formset(request, obj), inline
 
     def save_model(self, request, obj, form, change):

@@ -220,6 +220,9 @@ class ProductVariation(TranslatableModel):
         )
         self.product.save()
 
+    def __str__(self):
+        return self.safe_translation_getter("value", any_language=True)
+
 
 class ProductVariationTranslation(TranslatedFieldsModel):
     master = models.ForeignKey(ProductVariation, on_delete=models.CASCADE, related_name='translations')

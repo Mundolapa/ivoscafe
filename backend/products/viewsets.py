@@ -23,9 +23,9 @@ class ProductListView(generics.ListAPIView):
 
     authentication_classes = [
         authentication.SessionAuthentication,
-        TokenAuthentication
+        # TokenAuthentication
     ]
-    permission_classes = [permissions.AllowAny]
+
 
 
 class ProductDetailAPIView(generics.RetrieveAPIView):
@@ -36,7 +36,6 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
         authentication.SessionAuthentication,
         TokenAuthentication
     ]
-    permission_classes = [permissions.AllowAny]
 
 
 class ProductListByCategoryView(generics.ListAPIView):
@@ -46,7 +45,6 @@ class ProductListByCategoryView(generics.ListAPIView):
         TokenAuthentication
     ]
     # permission_classes = [permissions.IsAuthenticated]
-    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         category_id = self.kwargs['category_id']
