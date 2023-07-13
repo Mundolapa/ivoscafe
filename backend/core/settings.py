@@ -123,19 +123,27 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config("DB_DEFAULT_NAME"),
-        'USER': config("DB_DEFAULT_USER"),
-        'PASSWORD': config("DB_DEFAULT_PASSWORD"),
-        'HOST': config("DB_DEFAULT_HOST"),
-        'PORT': config("DB_DEFAULT_PORT"),
+        'NAME': config("DB_AWS_NAME"),
+        'USER': config("DB_AWS_USER"),
+        'PASSWORD': config("DB_AWS_PASSWORD"),
+        'HOST': config("DB_AWS_HOST"),
+        'PORT': config("DB_AWS_PORT"),
+    },
+    'local': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config("DB_LOCAL_NAME"),
+        'USER': config("DB_LOCAL_USER"),
+        'PASSWORD': config("DB_LOCAL_PASSWORD"),
+        'HOST': config("DB_LOCAL_HOST"),
+        'PORT': config("DB_LOCAL_PORT"),
     },
     'test': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': config("DB_TEST_NAME"),
-        'USER': config("DB_DEFAULT_USER"),
-        'PASSWORD': config("DB_DEFAULT_PASSWORD"),
-        'HOST': config("DB_DEFAULT_HOST"),
-        'PORT': config("DB_DEFAULT_PORT"),
+        'USER': config("DB_LOCAL_USER"),
+        'PASSWORD': config("DB_LOCAL_PASSWORD"),
+        'HOST': config("DB_LOCAL_HOST"),
+        'PORT': config("DB_LOCAL_PORT"),
     }
 }
 
@@ -328,10 +336,12 @@ SCHEDULER_TIMEZONE = 'America/Tegucigalpa'
 #  CORS CONFIGURATION #
 ####################################
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',  # replace with your own domain
-    'http://127.0.0.1:3000',  # replace with your own domain
-    'http://192.168.132.160:3000',  # replace with your own domain
-]
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:3000',  # replace with your own domain
+#     'http://127.0.0.1:3000',  # replace with your own domain
+#     'http://192.168.132.160:3000',  # replace with your own domain
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
