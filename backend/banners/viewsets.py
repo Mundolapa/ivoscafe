@@ -1,5 +1,5 @@
 from django.db.models import Q
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions, authentication
 
 from banners.models import Banner
 from banners.serializers import BannerSerializer
@@ -9,6 +9,8 @@ from base.models import GlobalSettings
 class BannerViewSet(viewsets.ModelViewSet):
     serializer_class = BannerSerializer
     pagination_class = None  # Disable pagination for this viewset
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         banner_type = GlobalSettings.objects.first().banner_type
