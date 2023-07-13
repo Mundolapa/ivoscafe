@@ -2,12 +2,14 @@ from rest_framework import serializers
 from .models import GlobalSettings, GlobalSettingsTranslation, ThirdPartyApiKeys
 from django.utils.translation import get_language
 from rest_framework.fields import SerializerMethodField
+from django.contrib.sites.models import Site
 
 current_language = get_language()
 print(current_language)
 
 class GlobalSettingsSerializer(serializers.ModelSerializer):
     third_party_api_keys = SerializerMethodField()
+    site = serializers.SerializerMethodField()
 
     class Meta:
         model = GlobalSettings
@@ -15,8 +17,14 @@ class GlobalSettingsSerializer(serializers.ModelSerializer):
             'website_title',
             'website_description',
             'website_keywords',
-            'website_copy_right',
+            'website_copyright',
             'website_footer_text',
+            'website_about_us',
+            'website_terms_and_conditions',
+            'website_privacy_policy',
+            'website_our_vision',
+            'website_our_mission',
+            'website_our_goals',
             'website_logo',
             'website_favicon',
             'website_email',
@@ -43,8 +51,12 @@ class GlobalSettingsSerializer(serializers.ModelSerializer):
             'default_currency',
             'free_delivery',
             'free_delivery_amount',
+            'site',
             'third_party_api_keys',
         )
+
+    def get_site(self, obj):
+        return obj.site.name
 
     def get_third_party_api_keys(self, obj):
         third_party_api_keys = ThirdPartyApiKeys.load()

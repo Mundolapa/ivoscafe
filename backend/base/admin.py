@@ -12,8 +12,14 @@ class GlobalSettingsAdmin(TranslatableAdmin):
                 "website_title",
                 "website_description",
                 "website_keywords",
-                "website_copy_right",
+                "website_copyright",
                 "website_footer_text",
+                "website_about_us",
+                "website_terms_and_conditions",
+                "website_privacy_policy",
+                "website_our_vision",
+                "website_our_mission",
+                "website_our_goals",
             )
         }),
         ('Website elements', {

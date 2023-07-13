@@ -1,3 +1,4 @@
+from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.db import models
 # from parler.fields import TranslatedField
@@ -64,6 +65,7 @@ class GlobalSettings(SingletonModel, TranslatableModel):
     default_currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='USD')
     free_delivery = models.BooleanField(default=False)
     free_delivery_amount = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, default=1)
 
     @classmethod
     def load(cls):
@@ -85,8 +87,15 @@ class GlobalSettingsTranslation(TranslatedFieldsModel):
     website_title = models.CharField(max_length=120, blank=True, null=True)
     website_description = models.TextField(blank=True, null=True)
     website_keywords = models.CharField(max_length=255, blank=True, null=True)
-    website_copy_right = models.CharField(max_length=120, blank=True, null=True)
+    website_copyright = models.CharField(max_length=120, blank=True, null=True)
     website_footer_text = models.TextField(blank=True, null=True)
+    website_about_us = models.TextField(blank=True, null=True)
+    website_terms_and_conditions = models.TextField(blank=True, null=True)
+    website_privacy_policy = models.TextField(blank=True, null=True)
+    website_our_vision = models.TextField(blank=True, null=True)
+    website_our_mission = models.TextField(blank=True, null=True)
+    website_our_goals = models.TextField(blank=True, null=True)
+
 
     class Meta:
         unique_together = [('language_code', 'master', 'id')]
