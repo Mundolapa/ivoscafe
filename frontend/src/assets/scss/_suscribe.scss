@@ -187,7 +187,7 @@
       &.green-subscribe {
         input,
         button {
-          background-color: #6eab49;
+          background-color: $button-green;
           &:hover {
             background-color: $theme-color;
           }

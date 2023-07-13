@@ -135,6 +135,9 @@
       color: #000;
       border: 1px solid #c1c1c1;
       background: transparent;
+        &:focus {
+            background-color: #f8f8f8;
+        }
     }
     textarea {
       height: 175px;
@@ -163,6 +166,16 @@
     color: #333;
     &.success {
       margin-top: 10px;
+    }
+    &.error {
+      color: #bf1650;
+      font-size: 12px;
+      margin-top: -30px;
+      margin-bottom: 20px;
+    }
+    &.error::before {
+      display: inline;
+      content: "⚠ ";
     }
   }
 }
