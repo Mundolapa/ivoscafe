@@ -9,7 +9,7 @@ import ProtectedRoute from "./helpers/ProtectedRoute";
 const HomeIvosCafe = lazy(() => import("./pages/home/HomeIvosCafe"));
 
 // Shop pages
-const ShopGridStandard = lazy(() => import("./pages/shop/ShopGridStandard"));
+const ShopGrid = lazy(() => import("./pages/shop/ShopGridFilter"));
 
 // product pages
 const Product = lazy(() => import("./pages/shop-product/Product"));
@@ -40,7 +40,7 @@ const App = () => {
                     <Route path="/" element={<HomeIvosCafe />} />
 
                     {/* Shop pages */}
-                    <Route path="/shop-grid-standard" element={<ShopGridStandard />} />
+                    <Route path="/products" element={<ShopGrid />} />
 
                     {/* Shop product pages */}
                     <Route path="/product/:id" element={<Product />} />
