@@ -35,7 +35,10 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.132.160']
+if DEBUG:
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.132.160']
+else:
+    ALLOWED_HOSTS = ['https://ivoscafe.com', 'ivoscafe.com']
 
 SITE_ID = 1
 
@@ -120,32 +123,44 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config("DB_AWS_NAME"),
-        'USER': config("DB_AWS_USER"),
-        'PASSWORD': config("DB_AWS_PASSWORD"),
-        'HOST': config("DB_AWS_HOST"),
-        'PORT': config("DB_AWS_PORT"),
-    },
-    'local': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config("DB_LOCAL_NAME"),
-        'USER': config("DB_LOCAL_USER"),
-        'PASSWORD': config("DB_LOCAL_PASSWORD"),
-        'HOST': config("DB_LOCAL_HOST"),
-        'PORT': config("DB_LOCAL_PORT"),
-    },
-    'test': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config("DB_TEST_NAME"),
-        'USER': config("DB_LOCAL_USER"),
-        'PASSWORD': config("DB_LOCAL_PASSWORD"),
-        'HOST': config("DB_LOCAL_HOST"),
-        'PORT': config("DB_LOCAL_PORT"),
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config("DB_AWS_NAME"),
+            'USER': config("DB_AWS_USER"),
+            'PASSWORD': config("DB_AWS_PASSWORD"),
+            'HOST': config("DB_AWS_HOST"),
+            'PORT': config("DB_AWS_PORT"),
+        },
+        'local': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config("DB_LOCAL_NAME"),
+            'USER': config("DB_LOCAL_USER"),
+            'PASSWORD': config("DB_LOCAL_PASSWORD"),
+            'HOST': config("DB_LOCAL_HOST"),
+            'PORT': config("DB_LOCAL_PORT"),
+        },
+        'test': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config("DB_TEST_NAME"),
+            'USER': config("DB_LOCAL_USER"),
+            'PASSWORD': config("DB_LOCAL_PASSWORD"),
+            'HOST': config("DB_LOCAL_HOST"),
+            'PORT': config("DB_LOCAL_PORT"),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config("DB_AWS_NAME"),
+            'USER': config("DB_AWS_USER"),
+            'PASSWORD': config("DB_AWS_PASSWORD"),
+            'HOST': config("DB_AWS_HOST"),
+            'PORT': config("DB_AWS_PORT"),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -216,8 +231,21 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # LOGOUT_URL = '/logout/'
 # LOGIN_ERROR_URL = '/login/'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = f'https://ivoscafe-media.s3.amazonaws.com/media/'
+####################################
+#  AWS S3 CONFIGURATION #
+####################################
+AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
+AWS_SIGNATURE_NAME = config("AWS_SIGNATURE_NAME")
+AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME")
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_VERITY = True
+DEFAULT_FILE_STORAGE ='storages.backends.s3boto3.S3Boto3Storage'
 
 # BASE_URL = 'https://ivoscafe.com/'
 
@@ -325,9 +353,7 @@ SCHEDULER_AUTOSTART = True
 
 SCHEDULER_RUN_AT_TIMES = [
     '00:00',
-    '10:15',
     '12:00',
-    '22:15',
 ]
 
 SCHEDULER_TIMEZONE = 'America/Tegucigalpa'
@@ -336,12 +362,16 @@ SCHEDULER_TIMEZONE = 'America/Tegucigalpa'
 #  CORS CONFIGURATION #
 ####################################
 
-# CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:3000',  # replace with your own domain
-#     'http://127.0.0.1:3000',  # replace with your own domain
-#     'http://192.168.132.160:3000',  # replace with your own domain
-# ]
 
-CORS_ALLOW_ALL_ORIGINS = True
-
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+    CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+else:
+    CORS_ALLOWED_ORIGINS = [
+        "https://ivoscafe.com",
+        "https://www.ivoscafe.com",
+    ]
+    CSRF_TRUSTED_ORIGINS = [
+        "ivoscafe.com",
+        "www.ivoscafe.com",
+    ]
