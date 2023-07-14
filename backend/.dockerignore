@@ -1,0 +1,31 @@
+# .dockerignore
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.env  # Ignore environment files
+*.log
+*.csv
+*.json
+*.md
+.git
+.gitignore
+README.md
+LICENSE
+.vscode
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+docs/
+tests/
+bin/
+include/
+lib/
+staticfiles/
+media/
