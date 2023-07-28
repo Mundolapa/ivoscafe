@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-23 16:23-0600\n"
+"POT-Creation-Date: 2023-07-18 11:46-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,77 +18,139 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: core/settings.py:150
-msgid "English"
-msgstr "Inglés"
+#: banners/admin.py:24 products/models.py:117 sliders/admin.py:18
+msgid "Title"
+msgstr "Título"
 
-#: core/settings.py:151
-msgid "Spanish"
-msgstr "Español"
+#: banners/admin.py:25
+msgid "Banner Type"
+msgstr "Tipo de Banner"
 
-#: core/urls.py:29
-msgid "admin/"
-msgstr "admin/"
+#: banners/models.py:58
+#, fuzzy
+#| msgid "Price"
+msgid "price"
+msgstr "precio"
 
-#: navsite/abstract_models.py:37
-msgid "Parent"
-msgstr "Padre"
+#: banners/models.py:59
+msgid "promo"
+msgstr "promo"
 
-#: navsite/abstract_models.py:72
+#: banners/models.py:60
+msgid "discount"
+msgstr "descuento"
+
+#: banners/models.py:61 navsite/abstract_models.py:46 sliders/models.py:43
+#, fuzzy
+#| msgid "Public"
+msgid "public"
+msgstr "público"
+
+#: banners/models.py:62
+msgid "banner_type"
+msgstr ""
+
+#: banners/models.py:117 navsite/abstract_models.py:90 sliders/models.py:58
 msgid "title"
 msgstr "título"
 
-#: navsite/abstract_models.py:74
-msgid "slug"
-msgstr "slug"
-
-#: navsite/abstract_models.py:76
-msgid "The slug is used in the URL of the page"
+#: banners/models.py:118
+msgid "promo_text"
 msgstr ""
 
-#: navsite/abstract_models.py:78
-msgid "keywords"
-msgstr "palabras clave"
+#: banners/models.py:119 sliders/models.py:60
+msgid "button_text"
+msgstr ""
 
-#: navsite/abstract_models.py:79
-msgid "description"
-msgstr "descripción"
+#: base/models.py:82 base/models.py:83
+msgid "Global Settings"
+msgstr "Configuraciones Globales"
 
-#: navsite/abstract_models.py:80
+#: base/models.py:127 base/models.py:128
+msgid "Third Party Api Keys"
+msgstr "Llaves Api Externas"
+
+#: base/views.py:8
+msgid "Welcome to ivoscafe.com Api!"
+msgstr "Bienvenido(a) a la Api de ivoscafe.com!"
+
+#: base/views.py:16
+msgid "Resource not found."
+msgstr "No se encontró el recurso."
+
+#: core/settings.py:226
+msgid "English"
+msgstr "Inglés"
+
+#: core/settings.py:227
+msgid "Spanish"
+msgstr "Español"
+
+#: core/urls.py:30
+msgid "admin/"
+msgstr "admin/"
+
+#: navsite/abstract_models.py:28
+msgid "Container"
+msgstr "Contenedor"
+
+#: navsite/abstract_models.py:30
+msgid "Shop Grid"
+msgstr "Matriz de Tienda"
+
+#: navsite/abstract_models.py:31
+msgid "Shop List"
+msgstr "Listado de Tienda"
+
+#: navsite/abstract_models.py:32
+msgid "External Link"
+msgstr "Enlace Externo"
+
+#: navsite/abstract_models.py:43 sliders/models.py:40
 msgid "image"
 msgstr "imágen"
 
-#: navsite/abstract_models.py:81
+#: navsite/abstract_models.py:44
 msgid "icon"
-msgstr "icono"
+msgstr "ícono"
 
-#: navsite/abstract_models.py:82
-msgid "order_number"
-msgstr "número_de_orden"
-
-#: navsite/abstract_models.py:83
+#: navsite/abstract_models.py:45 sliders/models.py:39
 msgid "url"
-msgstr ""
+msgstr "url"
 
-#: navsite/abstract_models.py:84
-msgid "status"
-msgstr "estatus"
-
-#: navsite/abstract_models.py:85
-msgid "is_catalog"
-msgstr "es_catálogo"
-
-#: navsite/abstract_models.py:86
-msgid "active_url"
-msgstr "url_activo"
-
-#: navsite/abstract_models.py:87
+#: navsite/abstract_models.py:47 sliders/models.py:44
 msgid "created"
 msgstr "creado"
 
-#: navsite/abstract_models.py:88
+#: navsite/abstract_models.py:48 sliders/models.py:45
 msgid "updated"
 msgstr "actualizado"
+
+#: navsite/abstract_models.py:49
+#, fuzzy
+#| msgid "Category"
+msgid "category type"
+msgstr "Categoría"
+
+#: navsite/abstract_models.py:57
+msgid "Parent"
+msgstr "Padre"
+
+#: navsite/abstract_models.py:92
+msgid "slug"
+msgstr "slug"
+
+#: navsite/abstract_models.py:94
+msgid "The slug is used in the URL of the page"
+msgstr "El slug es usado en la URL de la página"
+
+#: navsite/abstract_models.py:96
+msgid "keywords"
+msgstr "palabras clave"
+
+#: navsite/abstract_models.py:97
+msgid "description"
+msgstr "descripción"
 
 #: navsite/models.py:11
 msgid "Category"
@@ -106,54 +168,120 @@ msgstr "Traducciones de categorías"
 msgid "Category Translations"
 msgstr "Traducciones de categorías"
 
-#: products/models.py:43
-msgid "Title"
-msgstr "Título"
-
-#: products/models.py:44
-msgid "Slug"
-msgstr "Slug"
-
-#: products/models.py:45
-msgid "Keywords"
-msgstr "Palabras clave"
-
-#: products/models.py:46
-msgid "Short Description"
-msgstr "Descripción corta"
-
-#: products/models.py:47
-msgid "Description"
-msgstr "Descripción"
-
-#: products/models.py:48
+#: products/models.py:60
 msgid "Stock"
 msgstr "Existencia"
 
-#: products/models.py:49
+#: products/models.py:61
+msgid "New"
+msgstr "Nuevo"
+
+#: products/models.py:62
 msgid "Available"
 msgstr "Disponible"
 
-#: products/models.py:50
+#: products/models.py:63
 msgid "Price"
 msgstr "Precio"
 
-#: products/models.py:51
+#: products/models.py:64
+msgid "Discount"
+msgstr "Descuento"
+
+#: products/models.py:65
 msgid "Public"
 msgstr "Público"
 
-#: products/models.py:52
+#: products/models.py:66
+msgid "Sku"
+msgstr "Sku"
+
+#: products/models.py:67
+msgid "Rating"
+msgstr "Valuación"
+
+#: products/models.py:68
+msgid "Offer end"
+msgstr "Oferta termina"
+
+#: products/models.py:69
+msgid "Affiliate link"
+msgstr "Enlace afiliado"
+
+#: products/models.py:70
+msgid "Sale count"
+msgstr "Conteo de ventas"
+
+#: products/models.py:71
 msgid "Created"
 msgstr "Creado"
 
-#: products/models.py:53
+#: products/models.py:72
 msgid "Updated"
 msgstr "Actualizado"
 
-#: products/models.py:60
+#: products/models.py:78
 msgid "Product"
 msgstr "Producto"
 
-#: products/models.py:61
+#: products/models.py:79
 msgid "Products"
 msgstr "Productos"
+
+#: products/models.py:118
+msgid "Slug"
+msgstr "Slug"
+
+#: products/models.py:119
+msgid "Keywords"
+msgstr "Palabras clave"
+
+#: products/models.py:120
+msgid "Short Description"
+msgstr "Descripción corta"
+
+#: products/models.py:121
+msgid "Description"
+msgstr "Descripción"
+
+#: products/models.py:122
+msgid "Additional information"
+msgstr "Información adicional"
+
+#: sliders/models.py:32
+msgid "Center"
+msgstr "Centrar"
+
+#: sliders/models.py:33
+msgid "Left"
+msgstr "Izquierda"
+
+#: sliders/models.py:34
+msgid "Right"
+msgstr "Derecha"
+
+#: sliders/models.py:35
+msgid "Full Image"
+msgstr "Imagen completa"
+
+#: sliders/models.py:41
+msgid "image position"
+msgstr "posición de la imagen"
+
+#: sliders/models.py:59
+#, fuzzy
+#| msgid "title"
+msgid "subtitle"
+msgstr "título"
+
+#~ msgid "order_number"
+#~ msgstr "número_de_orden"
+
+#~ msgid "status"
+#~ msgstr "estatus"
+
+#~ msgid "is_catalog"
+#~ msgstr "es_catálogo"
+
+#~ msgid "active_url"
+#~ msgstr "url_activo"

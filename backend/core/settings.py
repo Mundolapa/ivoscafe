@@ -11,9 +11,13 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+import boto3
+import json
+from botocore.exceptions import BotoCoreError, ClientError
 from dotenv import load_dotenv
 from prettyconf import config
 import datetime
+# import logging
 
 from django.utils.translation import gettext_lazy as _
 
@@ -29,16 +33,37 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 load_dotenv(verbose=True, dotenv_path=os.path.join(BASE_DIR, '.env'))
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config("SECRET_KEY")
+# Get secret key from AWS Secrets Manager
+def get_secret(secret_name, region_name):
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name,
+    )
+
+    try:
+        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
+    except Exception as e:
+        raise e
+    else:
+        secret = get_secret_value_response['SecretString']
+        return json.loads(secret)
+
+# AWS Region Name (e.g. us-east-1) - Used for AWS Secrets Manager
+AWS_REGION = 'us-east-1' # Used for SES, S3 and other AWS features
+
+# SECURITY WARNING: DEVELOPMENT MODE ONLY! CHANGE TO FALSE FOR PRODUCTION!
+DEV_MODE = False
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 if DEBUG:
-    ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.132.160']
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 else:
-    ALLOWED_HOSTS = ['https://ivoscafe.com', 'ivoscafe.com']
+    ALLOWED_HOSTS = [
+        '.ivoscafe.com',
+    ]
 
 SITE_ID = 1
 
@@ -88,6 +113,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'middleware.health_check.HealthCheckMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -122,16 +148,26 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+# Getting secrets for database
+if DEV_MODE:
+    db_secrets = {
+        "dbname": config("DB_AWS_NAME"),
+        "username": config("DB_AWS_USER"),
+        "password": config("DB_AWS_PASSWORD"),
+        "host": config("DB_AWS_HOST"),
+        "port": config("DB_AWS_PORT")
+    }
+else:
+    db_secrets = get_secret('IvosCafeDB', AWS_REGION)
 
-if DEBUG:
+if DEV_MODE:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config("DB_AWS_NAME"),
-            'USER': config("DB_AWS_USER"),
-            'PASSWORD': config("DB_AWS_PASSWORD"),
-            'HOST': config("DB_AWS_HOST"),
-            'PORT': config("DB_AWS_PORT"),
+            'NAME': db_secrets['dbname'],
+            'USER': db_secrets['username'],
+            'PASSWORD': db_secrets['password'],
+            'HOST': db_secrets['host'],
+            'PORT': db_secrets['port'],
         },
         'local': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -139,7 +175,7 @@ if DEBUG:
             'USER': config("DB_LOCAL_USER"),
             'PASSWORD': config("DB_LOCAL_PASSWORD"),
             'HOST': config("DB_LOCAL_HOST"),
-            'PORT': config("DB_LOCAL_PORT"),
+            'PORT': '5432',
         },
         'test': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -147,18 +183,18 @@ if DEBUG:
             'USER': config("DB_LOCAL_USER"),
             'PASSWORD': config("DB_LOCAL_PASSWORD"),
             'HOST': config("DB_LOCAL_HOST"),
-            'PORT': config("DB_LOCAL_PORT"),
+            'PORT': '5432',
         }
     }
 else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config("DB_AWS_NAME"),
-            'USER': config("DB_AWS_USER"),
-            'PASSWORD': config("DB_AWS_PASSWORD"),
-            'HOST': config("DB_AWS_HOST"),
-            'PORT': config("DB_AWS_PORT"),
+            'NAME': db_secrets['dbname'],
+            'USER': db_secrets['username'],
+            'PASSWORD': db_secrets['password'],
+            'HOST': db_secrets['host'],
+            'PORT': db_secrets['port'],
         }
     }
 
@@ -220,7 +256,7 @@ PARLER_SHOW_EXCLUDED_LANGUAGE_TABS = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -231,23 +267,43 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # LOGOUT_URL = '/logout/'
 # LOGIN_ERROR_URL = '/login/'
 
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = f'https://ivoscafe-media.s3.amazonaws.com/media/'
 ####################################
-#  AWS S3 CONFIGURATION #
+#  AWS CONFIGURATION #
 ####################################
-AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
-AWS_SIGNATURE_NAME = config("AWS_SIGNATURE_NAME")
-AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME")
+# Getting secrets for AWS
+if DEV_MODE:
+    app_secrets = {
+        "secret_key": config("SECRET_KEY"),
+        "access_key": config("AWS_ACCESS_KEY_ID"),
+        "secret_access_key": config("AWS_SECRET_ACCESS_KEY"),
+        "bucket_name": config("AWS_STORAGE_BUCKET_NAME")
+    }
+else:
+    app_secrets = get_secret('IvosKeys', AWS_REGION)
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = app_secrets['secret_key']
+
+# AWS settings
+AWS_ACCESS_KEY_ID = app_secrets['access_key']
+AWS_SECRET_ACCESS_KEY = app_secrets['secret_access_key']
+
+# S3 settings
+AWS_STORAGE_BUCKET_NAME = app_secrets['bucket_name']
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
-AWS_S3_VERITY = True
 DEFAULT_FILE_STORAGE ='storages.backends.s3boto3.S3Boto3Storage'
 
+# SES settings
+EMAIL_BACKEND = 'django_ses.SESBackend'
+AWS_SES_REGION_NAME = AWS_REGION
+AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
+
+
 # BASE_URL = 'https://ivoscafe.com/'
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -257,13 +313,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ####################################
 #  EMAIL CUSTOM CONFIGURATION #
 ####################################
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-EMAIL_PORT = 587
-PASSWORD_RESET_TIMEOUT_DAYS = 2
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+# EMAIL_PORT = 587
+# PASSWORD_RESET_TIMEOUT_DAYS = 2
 
 ####################################
 #  CKEDITOR CONFIGURATION #
@@ -365,13 +421,43 @@ SCHEDULER_TIMEZONE = 'America/Tegucigalpa'
 
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
-    CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+    CSRF_TRUSTED_ORIGINS = ["localhost:3000"]
 else:
     CORS_ALLOWED_ORIGINS = [
+        "http://ivoscafe.com",
+        "http://www.ivoscafe.com",
         "https://ivoscafe.com",
         "https://www.ivoscafe.com",
+        "http://backend.ivoscafe.com",
+        "https://backend.ivoscafe.com",
     ]
     CSRF_TRUSTED_ORIGINS = [
-        "ivoscafe.com",
-        "www.ivoscafe.com",
+        "http://ivoscafe.com",
+        "http://www.ivoscafe.com",
+        "https://ivoscafe.com",
+        "https://www.ivoscafe.com",
+        "http://backend.ivoscafe.com",
+        "https://backend.ivoscafe.com",
     ]
+
+####################################
+#  LOGGING CONFIGURATION #
+####################################
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#         'file': {
+#             'level': 'ERROR',
+#             'class': 'logging.FileHandler',
+#             'filename': 'debug.log',
+#         },
+#     },
+#     'root': {
+#         'handlers': ['console', 'file'],
+#         'level': 'INFO',
+#     }
+# }

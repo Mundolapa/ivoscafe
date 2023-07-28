@@ -195,7 +195,7 @@
       }
       &.active h4 {
         color: #ed59a0;
-        border-bottom: 2px solid ed59a0e90042;
+        border-bottom: 2px solid #e90042;
       }
     }
   }
@@ -335,9 +335,9 @@
 
         opacity: 0;
         background-color: $theme-color;
-        // &:hover {
-        //     background-color: #000;
-        // }
+       /*  &:hover {
+             background-color: #000;
+         }*/
       }
       .pro-wishlist {
         width: 48px;

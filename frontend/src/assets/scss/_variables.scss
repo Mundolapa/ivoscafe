@@ -1,4 +1,4 @@
-// Font Family
+/* Font Family*/
 $poppins: "Poppins", sans-serif;
 $abrilfatface: "Abril Fatface", cursive;
 $cormorantgaramond: "Cormorant Garamond";
@@ -8,7 +8,7 @@ $lobster: "Lobster", cursive;
 $josefin: "Josefin Sans", sans-serif;
 $anton: "Anton", sans-serif;
 
-// text Colors ---------------
+/* text Colors ---------------*/
 
 $white: #ffffff;
 $black: #000000;
@@ -16,38 +16,38 @@ $grey: #f6f7f8;
 $red: #f6f7f8;
 $green: #f6f7f8;
 
-// bg Colors ---------------
+/* bg Colors ---------------*/
 
 $bg-white: #ffffff;
 $bg-black: #000000;
 $bg-grey: #f6f6f8;
 $bg-purple: #f0e0ff;
 
-// Heading Color
+/* Heading Color*/
 $heading-color: #000000;
 
-// Theme Color
+/* Theme Color*/
 $theme-color: #00ccff;
 
-// Button Color
+ /*Button Color*/
 $button-green: #33cc33;
 
-// Light Green
+/* Light Green*/
 $light-green: #99ff00;
 
-// Dark Green
+/* Dark Green*/
 $dark-green: #009933;
 
-// light Yellow
+/* light Yellow*/
 $light-yellow: #ffff00;
 
-// Dark Yellow
+/* Dark Yellow*/
 $dark-yellow: #ffd900;
 
-// Canoe Color
+/* Canoe Color*/
 $canoe-color: #663333;
 
-// Responsive Variables
+/* Responsive Variables*/
 $xx-layout: "only screen and (min-width: 1366px) and (max-width: 1600px)";
 $xl-layout: "only screen and (min-width: 1200px) and (max-width: 1365px)";
 $lg-layout: "only screen and (min-width: 992px) and (max-width: 1199px)";

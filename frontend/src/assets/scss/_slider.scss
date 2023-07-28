@@ -531,8 +531,7 @@
     margin: 6px 0 37px;
 
     color: #141414;
-    //-webkit-text-stroke: 1px white;
-    text-shadow: // Add this block for a "blurred" white stroke
+    text-shadow:
             -1px -1px 0 rgba(255, 255, 255, 0.6),
             1px -1px 0 rgba(255, 255, 255, 0.6),
             -1px 1px 0 rgba(255, 255, 255, 0.6),
@@ -587,7 +586,7 @@
   &.slider-content-fruits {
     h3 {
       color: #141414;
-      text-shadow: // Add this block for a "blurred" white stroke
+      text-shadow:
               -1px -1px 0 rgba(255, 255, 255, 0.6),
               1px -1px 0 rgba(255, 255, 255, 0.6),
               -1px 1px 0 rgba(255, 255, 255, 0.6),
