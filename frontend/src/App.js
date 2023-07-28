@@ -29,6 +29,8 @@ const Checkout = lazy(() => import("./pages/other/Checkout"));
 
 const NotFound = lazy(() => import("./pages/other/NotFound"));
 
+const HealthCheck = lazy(() => import("./pages/other/HealthCheck"));
+
 const App = () => {
     const { isAuthenticated } = useSelector((state) => state.auth);
     return (
@@ -66,6 +68,9 @@ const App = () => {
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/compare" element={<Compare />} />
                     <Route path="/checkout" element={<Checkout />} />
+
+                    {/* Health Check */}
+                    <Route path="/health" element={<HealthCheck />} />
 
                     <Route path="/404" element={<NotFound />} />
                     <Route path="*" element={<NotFound />} />
