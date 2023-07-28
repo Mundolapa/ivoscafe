@@ -129,8 +129,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/venv/
-/.vscode/
-/geodata/shapefiles/
-/staticfiles/
-/static/
+.vscode/
+geodata/shapefiles/
+staticfiles/
+/backend/static/
