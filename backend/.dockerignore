@@ -28,4 +28,5 @@ bin/
 include/
 lib/
 staticfiles/
+static/
 media/
