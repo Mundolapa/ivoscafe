@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // const BACKEND_ROOT = 'http://127.0.0.1:8000';
-const BACKEND_ROOT = 'http://backend.ivoscafe.com';
+const BACKEND_ROOT = 'https://backend.ivoscafe.com';
 
 const createEndpoint = (lang) => {
     const instance = axios.create({
