@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import clsx from "clsx";
 import {EffectFade} from 'swiper';
 import Swiper, {SwiperSlide} from "../../components/swiper";
-import HeroSliderFiveSingle from "../../components/hero-slider/HeroSliderFiveSingle.js";
+import HeroSlider from "../../components/hero-slider";
 import { useTranslation } from "react-i18next";
 import {endpoints} from "../../helpers/endpoints"
 import {useEffect, useState} from "react";
@@ -44,7 +44,7 @@ const HeroSliderFive = ({ spaceLeftClass, spaceRightClass }) => {
               <Swiper options={params}>
                 {publicSliders.map((single, key) => (
                     <SwiperSlide key={key}>
-                      <HeroSliderFiveSingle
+                      <HeroSlider
                           data={single}
                       />
                     </SwiperSlide>

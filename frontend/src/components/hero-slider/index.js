@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
-const HeroSliderFiveSingle = ({ data }) => {
+const HeroSlider = ({ data }) => {
   return (
     <div
       className="single-slider-2 slider-height-1 slider-height-res15 d-flex align-items-center slider-height-res bg-img"
@@ -29,8 +29,8 @@ const HeroSliderFiveSingle = ({ data }) => {
   );
 };
 
-HeroSliderFiveSingle.propTypes = {
+HeroSlider.propTypes = {
   data: PropTypes.shape({})
 };
 
-export default HeroSliderFiveSingle;
+export default HeroSlider;

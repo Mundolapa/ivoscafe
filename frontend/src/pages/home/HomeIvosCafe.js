@@ -1,7 +1,6 @@
 import {Fragment, useEffect, useState} from "react";
 import SEO from "../../components/seo";
 import Layout from "../../layouts/LayoutThree";
-// import SliderBanner from "../../wrappers/sliders-banner/SliderBanner";
 import HeroSlider from "../../wrappers/hero-slider/HeroSliderFive";
 // import FeatureIcons from "../../wrappers/feature-icon/FeatureIconFive";
 import TabProduct from "../../wrappers/product/TabProductFour";
@@ -49,8 +48,6 @@ const HomeIvosCafe = () => {
             {/* Wrappers in here */}
             {/* hero sliders */}
             <HeroSlider spaceLeftClass="ml-70" spaceRightClass="mr-70" />
-            {/* sliders banner */}
-            {/*<SliderBanner />*/}
             {/* banner */}
             <Banner />
             {/* feature icon */}
