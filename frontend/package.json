@@ -1,7 +1,7 @@
 {
   "name": "ivoscafe-frontend",
   "version": "1.0.0",
-  "homepage": ".",
+  "homepage": "/",
   "private": true,
   "dependencies": {
     "@fullpage/react-fullpage": "^0.1.39",
