@@ -10,18 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-import os
-import boto3
+import datetime
 import json
-from botocore.exceptions import BotoCoreError, ClientError
+import os
+
+import boto3
+from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
 from prettyconf import config
-import datetime
+
 # import logging
-
-from django.utils.translation import gettext_lazy as _
-
-from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR = Path(__file__).resolve().parent.parent
@@ -59,7 +57,11 @@ DEV_MODE = False
 DEBUG = False
 
 if DEBUG:
-    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+    ALLOWED_HOSTS = [
+        '127.0.0.1',
+        'localhost',
+        '.ivoscafe.com'
+    ]
 else:
     ALLOWED_HOSTS = [
         '.ivoscafe.com',
@@ -110,6 +112,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'leaflet',
     'ordered_model',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -253,13 +256,6 @@ PARLER_ENABLE_CACHING = True
 PARLER_DEFAULT_ACTIVATE = True
 PARLER_SHOW_EXCLUDED_LANGUAGE_TABS = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 # custom
 # LOGOUT_REDIRECT_URL = '/login/'
 # LOGIN_REDIRECT_URL = 'base:index'
@@ -292,7 +288,18 @@ AWS_SECRET_ACCESS_KEY = app_secrets['secret_access_key']
 AWS_STORAGE_BUCKET_NAME = app_secrets['bucket_name']
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
-DEFAULT_FILE_STORAGE ='storages.backends.s3boto3.S3Boto3Storage'
+
+# Storage settings for static files and media
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # SES settings
 EMAIL_BACKEND = 'django_ses.SESBackend'
@@ -303,7 +310,7 @@ AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
 # BASE_URL = 'https://ivoscafe.com/'
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/'
+MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -421,7 +428,11 @@ SCHEDULER_TIMEZONE = 'America/Tegucigalpa'
 
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
-    CSRF_TRUSTED_ORIGINS = ["localhost:3000"]
+    CSRF_TRUSTED_ORIGINS = [
+        "http://localhost:3000",
+        "http://backend.ivoscafe.com",
+        "https://backend.ivoscafe.com",
+    ]
 else:
     CORS_ALLOWED_ORIGINS = [
         "http://ivoscafe.com",

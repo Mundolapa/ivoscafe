@@ -2,10 +2,13 @@ import base64
 import time
 import uuid
 from decimal import Decimal
+from io import BytesIO
 
 from PIL import Image as PilImage
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.conf import settings
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage as storage
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from parler.fields import TranslatedField
@@ -132,8 +135,11 @@ class ProductTranslation(TranslatedFieldsModel):
     def body(self):
         return self.description
 
-def resize_and_center_image(image, target_width=600, target_height=800, quality=60):
-    img = PilImage.open(image.path)
+def resize_and_center_image(image_field, target_width=600, target_height=800, quality=60):
+    # img = PilImage.open(image.path)
+    original_image_name = image_field.name
+    # Open the image file as a PIL image object
+    img = PilImage.open(image_field.open(mode='rb'))
 
     # Resize the image while maintaining aspect ratio
     if img.width < img.height:
@@ -153,8 +159,23 @@ def resize_and_center_image(image, target_width=600, target_height=800, quality=
     # Paste the resized image into the center of this new image
     new_img.paste(img, ((target_width - img.width) // 2, (target_height - img.height) // 2))
 
-    # Save the modified image to the path of the uploaded image with reduced quality
-    new_img.save(image.path, quality=quality)
+    # Prepare the new image for saving
+    img_io = BytesIO()
+    new_img.save(img_io, format='JPEG', quality=quality)
+    img_content = ContentFile(img_io.getvalue())
+
+    # Create a new name for the resized image
+    new_image_name = f"{image_field.name.rsplit('.', 1)[0]}_resized.jpeg"
+
+    # Save the new image to the storage
+    storage.save(new_image_name, img_content)
+
+    # Delete the original image file
+    if storage.exists(original_image_name):
+        storage.delete(original_image_name)
+
+    return new_image_name
+
 
 def product_image_path(instance, filename):
     return f"images/products/{instance.product.id}/{filename}"
@@ -169,9 +190,12 @@ class Image(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
+        update_image_field = kwargs.pop('update_image_field', True)
         super().save(*args, **kwargs)
-        if self.image:
-            resize_and_center_image(self.image)
+        if self.image and '_resized' not in self.image.name and update_image_field:
+            new_name = resize_and_center_image(self.image)
+            self.image.name = new_name
+            self.save(update_fields=['image'], update_image_field=False)
 
     def __str__(self):
         return self.image.url
@@ -188,9 +212,12 @@ class ProductAttribute(TranslatableModel):
     image = models.ImageField(upload_to=attribute_image_path, null=True, blank=True)  # The attribute image
 
     def save(self, *args, **kwargs):
+        update_image_field = kwargs.pop('update_image_field', True)
         super().save(*args, **kwargs)
-        if self.image:
-            resize_and_center_image(self.image)
+        if self.image and '_resized' not in self.image.name and update_image_field:
+            new_name = resize_and_center_image(self.image)
+            self.image.name = new_name
+            self.save(update_fields=['image'], update_image_field=False)
 
     def __str__(self):
         return self.safe_translation_getter("name", any_language=True)
