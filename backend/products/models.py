@@ -146,12 +146,12 @@ def resize_and_center_image(image_field, target_width=600, target_height=800, qu
         baseheight = target_height
         hpercent = baseheight / float(img.height)
         wsize = int((float(img.width) * float(hpercent)))
-        img = img.resize((wsize, baseheight), PilImage.ANTIALIAS)
+        img = img.resize((wsize, baseheight), PilImage.LANCZOS)
     else:
         basewidth = target_width
         wpercent = basewidth / float(img.width)
         hsize = int((float(img.height) * float(wpercent)))
-        img = img.resize((basewidth, hsize), PilImage.ANTIALIAS)
+        img = img.resize((basewidth, hsize), PilImage.LANCZOS)
 
     # Create a new image with white background
     new_img = PilImage.new("RGB", (target_width, target_height), "white")
