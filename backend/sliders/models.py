@@ -1,7 +1,10 @@
-import os
+# import os
 import time
+from io import BytesIO
 
 from PIL import Image, ImageOps
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage as storage
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
@@ -67,15 +70,18 @@ class SliderTranslation(TranslatedFieldsModel):
         return self.title
 
 @receiver(post_save, sender=Slider)
-def resize_image(sender, instance, **kwargs):
-
-    if instance.image:
-        img = Image.open(instance.image.path)
+def resize_image(sender, instance, created, **kwargs):
+    if instance.image and '_resized' not in instance.image.name:
+        # Store the original image name
+        original_image_name = instance.image.name
+        # img = Image.open(instance.image.path)
+        # Open the image file as a PIL image object
+        img = Image.open(instance.image.open(mode='rb'))
         width, height = get_slider_width_height()
 
         # Check if the image is wider than the global width or if the position is 'full'
         if img.width > width or instance.image_position == 'full':
-            img = img.resize((width, int(img.height * (width / img.width))), Image.ANTIALIAS)
+            img = img.resize((width, int(img.height * (width / img.width))), Image.LANCZOS)
 
             # If the height exceeds global height, crop from the center.
             if img.height > height:
@@ -101,13 +107,38 @@ def resize_image(sender, instance, **kwargs):
 
         else:
             # For all other cases, resize and fit the image to the global width and height
-            img = img.resize((width, height), Image.ANTIALIAS)
-            img = ImageOps.fit(img, (width, height), Image.ANTIALIAS)
+            img = img.resize((width, height), Image.LANCZOS)
+            img = ImageOps.fit(img, (width, height), Image.LANCZOS)
 
-        img.save(instance.image.path, quality=60)
+        img = img.convert("RGB")  # Convert to RGB before saving as JPEG
+        # img.save(instance.image.path, quality=60)
+        # AWS S3 doesn't support saving images with PIL directly, so we need to save it to memory first
+        # and then save it to S3 using ContentFile and default_storage (which is configured to use S3)
+        img_io = BytesIO()
+        img.save(img_io, format='JPEG', quality=60)
+        img_content = ContentFile(img_io.getvalue())
+
+        # Create a new name for the resized image
+        # This name includes '_resized' and the '.jpeg' extension
+        new_image_name = f"{instance.image.name.rsplit('.', 1)[0]}_resized.jpeg"
+
+        # Save the new image to the storage
+        storage.save(new_image_name, img_content)
+
+        # Delete the original image file
+        if storage.exists(original_image_name):
+            storage.delete(original_image_name)
+
+        # Update the image field's name attribute in the database
+        instance.image.name = new_image_name
+        instance.save(update_fields=['image'])
+
 
 @receiver(post_delete, sender=Slider)
 def delete_image(sender, instance, **kwargs):
     if instance.image:
-        if os.path.isfile(instance.image.path):
-            os.remove(instance.image.path)
+        # Delete the image from S3
+        instance.image.delete(False)
+        # Delete the image from disk
+        # if os.path.isfile(instance.image.path):
+        #     os.remove(instance.image.path)

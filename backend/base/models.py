@@ -1,5 +1,6 @@
 from django.contrib.sites.models import Site
 from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from django.db import models
 # from parler.fields import TranslatedField
 from django.utils.translation import gettext_lazy as _
@@ -40,7 +41,7 @@ class GlobalSettings(SingletonModel, TranslatableModel):
         ('HNL', 'Lempira'),
     )
     website_logo = models.ImageField(upload_to='images/logo/', blank=True)
-    website_favicon = models.ImageField(upload_to='images/favicon/', blank=True)
+    website_favicon = models.FileField(upload_to='images/favicon/', blank=True)
     website_email = models.EmailField(max_length=120, blank=True, null=True)
     website_phone = models.CharField(max_length=120, blank=True, null=True)
     website_address = models.CharField(max_length=120, blank=True, null=True)
@@ -74,6 +75,21 @@ class GlobalSettings(SingletonModel, TranslatableModel):
             if not created:
                 obj.set_cache()
         return cache.get(cls.__name__)
+
+    def save(self, *args, **kwargs):
+        # Define the maximum size in bytes
+        max_logo_size = 500 * 1024  # 500KB
+        max_favicon_size = 50 * 1024  # 50KB
+
+        if self.website_logo:
+            if self.website_logo.file.size > max_logo_size:
+                raise ValidationError("The logo file is too large ( > 500KB)")
+
+        if self.website_favicon:
+            if self.website_favicon.file.size > max_favicon_size:
+                raise ValidationError("The favicon file is too large ( > 50KB)")
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return "Global Settings"
