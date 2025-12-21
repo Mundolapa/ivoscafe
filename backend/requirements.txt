@@ -9,7 +9,7 @@ cryptography==41.0.3
 defusedxml==0.7.1
 dj-rest-auth==4.0.1
 Django==4.2.4
-django-allauth==0.54.0
+django-allauth==65.13.0
 django-apscheduler==0.6.2
 django-ckeditor==6.7.0
 django-cors-headers==4.2.0
